@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----  
+# Reproducible Research: Peer Assessment 1
 
  
 ## Introduction
@@ -60,25 +55,59 @@ The dataset should be placed in the same folder as your analysis (R-script) file
 2. Load the data, i.e. read the file into R or RStudio.  
 For me, I prefer to use RStudio.
 
-```{r echo=TRUE}
+
+```r
 ## Load the data
 data <- read.csv("activity.csv", header = TRUE, na.strings = "NA", stringsAsFactors = FALSE)
-
 ```
 
 3. After loading the data, I will view the data first for a sense of how they look like.
 
-```{r echo=TRUE}
+
+```r
 ## View data
 str(data)
-head(data)
-tail(data)
+```
 
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : chr  "2012-10-01" "2012-10-01" "2012-10-01" "2012-10-01" ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
+
+```r
+head(data)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
+tail(data)
+```
+
+```
+##       steps       date interval
+## 17563    NA 2012-11-30     2330
+## 17564    NA 2012-11-30     2335
+## 17565    NA 2012-11-30     2340
+## 17566    NA 2012-11-30     2345
+## 17567    NA 2012-11-30     2350
+## 17568    NA 2012-11-30     2355
 ```
 
 4. Before I start running my analysis, I will load the packages that I need. I prefer the data to be in non-exponential form, so I will disable the scientific notation too.
 
-```{r eval=TRUE, message=FALSE, warning=FALSE}
+
+```r
 ## Load packages for use
 library(plyr)
 library(dplyr)
@@ -87,7 +116,6 @@ library(gridExtra) ## for putting multiple plots into one page
 
 ## Disable scientific notation
 options(scipen=999)
-
 ```
 
 
@@ -99,37 +127,54 @@ To facilitate my analysis, I will transform the variables first and rearrange th
 2. **date**: Convert the class from *character* to *date* format.
 3. **interval**: Transform the data to 4-digit numbers and convert them to resemble the time format (eg. *05:30*, *14:30*)
 
-```{r echo=TRUE}
+
+```r
 ## Format the variables
 data$steps <- as.numeric(data$steps) ## Change to numeric class
 data$date <- as.Date(data$date) ## Change to Date format
 data$interval <- formatC(data$interval, width = 4, flag = "0") ## Transform to 4-digit numbers (add leading zeros if necessary)
 data$interval <- format(strptime(data$interval,"%H%M"), "%H:%M") ## Format to resemble the time format
-
 ```
 
 The results will look like this.
 
-```{r echo=TRUE}
+
+```r
 ## View the data
 str(data)
+```
 
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : num  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: chr  "00:00" "00:05" "00:10" "00:15" ...
 ```
 
 4. Use **select** function from dplyr to rearrange the variables in the order of **date**, **interval**, and **steps**.
 
-```{r echo=TRUE}
+
+```r
 ## Rearrange the variables in the dataset
 data1 <- select(data, date, interval, steps)
-
 ```
 
 The processed dataset will look like this.
 
-```{r echo=TRUE}
+
+```r
 ## View the first few rows of the processed data
 head(data1)
+```
 
+```
+##         date interval steps
+## 1 2012-10-01    00:00    NA
+## 2 2012-10-01    00:05    NA
+## 3 2012-10-01    00:10    NA
+## 4 2012-10-01    00:15    NA
+## 5 2012-10-01    00:20    NA
+## 6 2012-10-01    00:25    NA
 ```
 
 
@@ -137,33 +182,44 @@ head(data1)
 
 First, select the cases with no missing values. This is necessary to prevent bias being introduced in the computation of mean and median total number of steps.
 
-```{r echo=TRUE}
+
+```r
 ## Select only cases with no missing values
 data2 <- data1[complete.cases(data1),]
-
 ```
 
 #### 1. Make a histogram of the total number of steps taken each day
 
 First, compute the total number of steps taken each day.
 
-```{r echo=TRUE}
+
+```r
 ## Compute total number of steps taken each day
 data3 <- ddply(data2, .(date), summarize, total.steps = sum(steps))
-
 ```
 
 The results will look like this.
 
-```{r echo=TRUE}
+
+```r
 ## View the first few rows of data3
 head(data3)
+```
 
+```
+##         date total.steps
+## 1 2012-10-02         126
+## 2 2012-10-03       11352
+## 3 2012-10-04       12116
+## 4 2012-10-05       13294
+## 5 2012-10-06       15420
+## 6 2012-10-07       11015
 ```
 
 Next, I will use ggplot2 to plot the histogram and name it as **plot1**.
 
-```{r echo=TRUE}
+
+```r
 ## Plot the histogram 
 g1 <- ggplot(data3, aes(date, total.steps)) ## data to use and define x-axis and y-axis
 plot1 <- g1 + geom_bar(fill = "blue", stat="identity") + ## plot bar chart
@@ -172,23 +228,24 @@ plot1 <- g1 + geom_bar(fill = "blue", stat="identity") + ## plot bar chart
         xlab("Date") + ## name x-axis
         ylab("Total Number of Steps Taken") ## name y-axis
 print(plot1)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
 
 #### 2. Calculate and report the mean and median total number of steps taken each day
 
-```{r echo=TRUE}
+
+```r
 ## Compute the mean total number of steps taken each day
 s1mean.steps <- mean(data3$total.steps)
 
 ## Compute the median number of steps taken each day
 s1median.steps <- median(data3$total.steps)
-
 ```
 
-The mean total number of steps taken each day is `r round(s1mean.steps, digits = 0)`.  
+The mean total number of steps taken each day is 10766.  
 
-The median total number of steps taken each day is `r round(s1median.steps, digits =0)`.
+The median total number of steps taken each day is 10765.
 
 
 ## What is the average daily activity pattern?
@@ -197,31 +254,42 @@ The median total number of steps taken each day is `r round(s1median.steps, digi
 
 Firstly, compute the average number of steps taken for each 5 minute interval, averaged across all days.
 
-```{r echo=TRUE}
+
+```r
 ## Compute the mean steps for each 5-minute interval 
 data4 <- ddply(data2, .(interval), summarize, mean.steps = mean(steps))
-
 ```
 
 The results will look like this.
 
-```{r echo=TRUE}
+
+```r
 ## View the first few rows of data4
 head(data4)
+```
 
+```
+##   interval mean.steps
+## 1    00:00  1.7169811
+## 2    00:05  0.3396226
+## 3    00:10  0.1320755
+## 4    00:15  0.1509434
+## 5    00:20  0.0754717
+## 6    00:25  2.0943396
 ```
 
 Before plotting the histogram, I will first set the x-axis tick-mark labels at 30 minute interval for the time series plot.
 
-```{r echo=TRUE}
+
+```r
 ## Format x-axis labels for the time series plot
 xlabels <- data4$interval[seq(1, nrow(data4), 30)]
-
 ```
 
 Next, I will plot the time series using ggplot and name the plot **plot2**.
 
-```{r echo=TRUE}
+
+```r
 ## Plot time series
 g2 <- ggplot(data4, aes(x = interval, y = mean.steps, group=1)) 
 plot2 <- g2 + geom_line(colour = "blue", size = 1) + ## plot line chart
@@ -231,19 +299,20 @@ plot2 <- g2 + geom_line(colour = "blue", size = 1) + ## plot line chart
         xlab("5-Minute Interval") +
         ylab("Average Number of Steps Taken")
 print(plot2)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
 
 #### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r echo=TRUE}
+
+```r
 ## Compute the maximum average number of steps (averaged across all days)
 s2max.steps <- max(data4$mean.steps)
 s2maxsteps.int <- data4$interval[which(data4$mean.steps == s2max.steps)]
-
 ```
 
-The 5-minute interval which gives the maximum mean number of steps (averaged across all the days) is `r s2maxsteps.int`, with `r round(s2max.steps, digits = 0)` steps.
+The 5-minute interval which gives the maximum mean number of steps (averaged across all the days) is 08:35, with 206 steps.
 
 
 ## Imputing missing values
@@ -252,12 +321,12 @@ Note that there are a number of days/intervals where there are missing values (c
 
 #### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r echo=TRUE}
-total.NA <- sum(is.na(data))
 
+```r
+total.NA <- sum(is.na(data))
 ```
 
-There are `r total.NA` missing values in the dataset.
+There are 2304 missing values in the dataset.
 
 #### 2. Devise a strategy for filling in all of the missing values in the dataset. 
 
@@ -265,27 +334,38 @@ The strategy does not need to be sophisticated. For example, you could use the m
 
 My strategy is to replace the missing values for each 5-minute interval with the corresponding 5-minute interval mean number of steps.
 
-```{r echo=TRUE}
+
+```r
 ## Select only cases with no missing values from the processed dataset, data1
 data2 <- data1[complete.cases(data1),]
 
 ## Compute the mean number of steps (averaged across all days) for each 5-minute interval
 int.mean <- ddply(data2, .(interval), summarize, mean.steps = mean(steps))
-
 ```
 
 The results will look like this.
 
-```{r echo=TRUE}
-head(int.mean)
 
+```r
+head(int.mean)
+```
+
+```
+##   interval mean.steps
+## 1    00:00  1.7169811
+## 2    00:05  0.3396226
+## 3    00:10  0.1320755
+## 4    00:15  0.1509434
+## 5    00:20  0.0754717
+## 6    00:25  2.0943396
 ```
 
 #### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 Firstly, create a **for loop** function to replace missing values (NAs) in the new dataset **comp.data** with the corresponding 5-minute interval mean. 
 
-```{r echo=TRUE}
+
+```r
 ## Create a new dataset with no missing values
 comp.data <- data1
         for (i in 1:length(comp.data[,3])) {
@@ -295,23 +375,36 @@ comp.data <- data1
                 comp.data[i,3] <- comp.data[i, 3]
         }
 }
-
 ```
 
 Check that the new dataset, "comp.data", has no missing values.
 
-```{r echo=TRUE}
+
+```r
 ## Check if the new dataset still have missing values 
 sum(is.na(comp.data)) ## zero indicates no missing value
+```
 
+```
+## [1] 0
 ```
 
 The new dataset will look like this.
 
-```{r echo=TRUE}
+
+```r
 ## View the first few rows of the new dataset., comp.data
 head(comp.data)
+```
 
+```
+##         date interval     steps
+## 1 2012-10-01    00:00 1.7169811
+## 2 2012-10-01    00:05 0.3396226
+## 3 2012-10-01    00:10 0.1320755
+## 4 2012-10-01    00:15 0.1509434
+## 5 2012-10-01    00:20 0.0754717
+## 6 2012-10-01    00:25 2.0943396
 ```
 
 
@@ -319,23 +412,34 @@ head(comp.data)
 
 First, I will compute the total number of steps taken per day.
 
-```{r echo=TRUE}
+
+```r
 ## Compute the total number of steps taken per day
 comp.data1 <- ddply(comp.data, .(date), summarize, total.steps = sum(steps))
-
 ```
 
 The results will look like this.
 
-```{r echo=TRUE}
+
+```r
 ## View the first few rows of comp.data1
 head(comp.data1)
+```
 
+```
+##         date total.steps
+## 1 2012-10-01    10766.19
+## 2 2012-10-02      126.00
+## 3 2012-10-03    11352.00
+## 4 2012-10-04    12116.00
+## 5 2012-10-05    13294.00
+## 6 2012-10-06    15420.00
 ```
 
 Next, I will plot the histogram and name it **plot3**.
 
-```{r echo=TRUE}
+
+```r
 ## Plot histogram of total number of steps taken each day
 g3 <- ggplot(data = comp.data1, aes(date, total.steps))
 plot3 <- g3 + geom_bar(fill = "blue", stat="identity") +
@@ -344,28 +448,30 @@ plot3 <- g3 + geom_bar(fill = "blue", stat="identity") +
         xlab("Date") +
         ylab("Total Number of Steps Taken")
 print(plot3)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-26-1.png) 
 
 #### 2. Calculate and report the mean and median total number of steps taken each day
 
-```{r echo=TRUE}
+
+```r
 ## Compute the mean total number of steps taken each day
 s3mean.steps <- mean(comp.data1$total.steps)
 
 ## Compute the median total number of steps taken each day
 s3median.steps <- median(comp.data1$total.steps)
-
 ```
 
-The mean total number of steps taken each day is `r round(s3mean.steps, digits = 0)`.
-The median total number of steps taken each day is `r round(s3median.steps, digits = 0)`.
+The mean total number of steps taken each day is 10766.
+The median total number of steps taken each day is 10766.
 
 #### 3. Difference between the values from the estimates from the first part of the assignment and this part of assignment
 
 I will plot a multipanel plot of the two histograms before and after imputing the missing values for easy comparison.
 
-```{r echo=TRUE}
+
+```r
 ## Retrieve plot 1 and rename it plot1a, adding a line for the mean total number of steps
 plot1a <- plot1 + geom_hline(yintercept = s1mean.steps)
 
@@ -374,8 +480,9 @@ plot3a <- plot3 + geom_hline(yintercept = s3mean.steps)
 
 ## Plot the two histogrames together
 grid.arrange(plot1a, plot3a, nrow = 2)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-28-1.png) 
 
 The values in the two histograms are not much different, other than the 
 histogram with imputed missing data having slightly longer tails and more data values (hence a fuller distrbution).  
@@ -386,7 +493,7 @@ The mean and median total number of steps are the same as a result of the imputi
 
 The mean total daily number of steps before and after imputing the missing data remain the same.  
 
-The median total daily number of steps before and after imputing the missing data differ by only one step (`r round(s1median.steps, digits =0)` steps before vs `r round(s3median.steps, digits = 0)` after imputing the missing values).
+The median total daily number of steps before and after imputing the missing data differ by only one step (10765 steps before vs 10766 after imputing the missing values).
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -399,7 +506,8 @@ First, I will use the **mutate** function from dplyr package to create a new var
 
 Then I will replace the weekdays (i.e. Monday to Friday) with **weekday** and Saturday and Sunday with **weekend**.
 
-```{r echo=TRUE}
+
+```r
 ## Create a new variable, week, for the weekdays
 comp.data2 <- mutate(comp.data, week = weekdays(date))
 
@@ -411,14 +519,23 @@ comp.data2$week <- gsub("Thursday", "weekday", comp.data2$week)
 comp.data2$week <- gsub("Friday", "weekday", comp.data2$week)
 comp.data2$week <- gsub("Saturday", "weekend", comp.data2$week)
 comp.data2$week <- gsub("Sunday", "weekend", comp.data2$week)
-
 ```
 
 The results will look like this.
 
-```{r echo=TRUE}
-head(comp.data2)
 
+```r
+head(comp.data2)
+```
+
+```
+##         date interval     steps    week
+## 1 2012-10-01    00:00 1.7169811 weekday
+## 2 2012-10-01    00:05 0.3396226 weekday
+## 3 2012-10-01    00:10 0.1320755 weekday
+## 4 2012-10-01    00:15 0.1509434 weekday
+## 5 2012-10-01    00:20 0.0754717 weekday
+## 6 2012-10-01    00:25 2.0943396 weekday
 ```
 
 #### 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
@@ -427,7 +544,8 @@ See the README file in the GitHub repository to see an example of what this plot
 
 First, I will compute the average number of steps taken per 5-minute interval, averaged across all weekday days or weekend days
 
-```{r echo=TRUE}
+
+```r
 ## Compute the mean steps taken per 5-min interval, averaged across all weekday days or weekend days
 comp.data3 <- ddply(comp.data2, c("interval", "week"), summarize,
                     mean.steps = mean(steps))
@@ -441,7 +559,8 @@ plot4 <- g4 + geom_line(size = 1) + facet_grid(week ~ .) +
         xlab("5-Minute Interval") +
         ylab("Average Number of Steps Taken")
 print(plot4)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-31-1.png) 
 
 
