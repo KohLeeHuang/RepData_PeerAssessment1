@@ -54,10 +54,10 @@ dataset.
 
 #### 1. Loading the data
 
-1. Download the dataset from the link above and unzip the file.  
+Download the dataset from the link above and unzip the file.  
 The dataset should be placed in the same folder as your analysis (R-script) files.
 
-2. Load the data, i.e. read the file into R or RStudio.  
+Load the data, i.e. read the file into R or RStudio.  
 For me, I prefer to use RStudio.
 
 ```{r echo=TRUE}
@@ -66,7 +66,7 @@ data <- read.csv("activity.csv", header = TRUE, na.strings = "NA", stringsAsFact
 
 ```
 
-3. After loading the data, I will view the data first for a sense of how they look like.
+After loading the data, I will view the data first for a sense of how they look like.
 
 ```{r echo=TRUE}
 ## View data
@@ -76,7 +76,7 @@ tail(data)
 
 ```
 
-4. Before I start running my analysis, I will load the packages that I need. I prefer the data to be in non-exponential form, so I will disable the scientific notation too.
+Before I start running my analysis, I will load the packages that I need. I prefer the data to be in non-exponential form, so I will disable the scientific notation too.
 
 ```{r eval=TRUE, message=FALSE, warning=FALSE}
 ## Load packages for use
@@ -93,7 +93,7 @@ options(scipen=999)
 
 #### 2. Processing/Transforming the data
 
-To facilitate my analysis, I will transform the variables first and rearrange them.  
+To facilitate my analysis, I will transform the variables first.  
 
 1. **steps**: Convert the class from *integer* to *numeric*.
 2. **date**: Convert the class from *character* to *date* format.
@@ -116,7 +116,7 @@ str(data)
 
 ```
 
-4. Use **select** function from dplyr to rearrange the variables in the order of **date**, **interval**, and **steps**.
+Use **select** function from dplyr to rearrange the variables in the order of **date**, **interval**, and **steps**.
 
 ```{r echo=TRUE}
 ## Rearrange the variables in the dataset
@@ -135,7 +135,7 @@ head(data1)
 
 ## What is mean total number of steps taken per day?
 
-First, select the cases with no missing values. This is necessary to prevent bias being introduced in the computation of mean and median total number of steps.
+Select the cases with no missing values. This is necessary to prevent bias being introduced in the computation of mean and median total number of steps.
 
 ```{r echo=TRUE}
 ## Select only cases with no missing values
@@ -283,7 +283,7 @@ head(int.mean)
 
 #### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-Firstly, create a **for loop** function to replace missing values (NAs) in the new dataset **comp.data** with the corresponding 5-minute interval mean. 
+First, create a **for loop** function to replace missing values (NAs) in the new dataset **comp.data** with the corresponding 5-minute interval mean. 
 
 ```{r echo=TRUE}
 ## Create a new dataset with no missing values

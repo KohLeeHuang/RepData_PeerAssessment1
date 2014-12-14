@@ -78,15 +78,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h2>Loading and preprocessing the data</h2>
 <div id="loading-the-data" class="section level4">
 <h4>1. Loading the data</h4>
-<ol style="list-style-type: decimal">
-<li><p>Download the dataset from the link above and unzip the file.<br />The dataset should be placed in the same folder as your analysis (R-script) files.</p></li>
-<li><p>Load the data, i.e. read the file into R or RStudio.<br />For me, I prefer to use RStudio.</p></li>
-</ol>
+<p>Download the dataset from the link above and unzip the file.<br />The dataset should be placed in the same folder as your analysis (R-script) files.</p>
+<p>Load the data, i.e. read the file into R or RStudio.<br />For me, I prefer to use RStudio.</p>
 <pre class="r"><code>## Load the data
 data &lt;- read.csv(&quot;activity.csv&quot;, header = TRUE, na.strings = &quot;NA&quot;, stringsAsFactors = FALSE)</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>After loading the data, I will view the data first for a sense of how they look like.</li>
-</ol>
+<p>After loading the data, I will view the data first for a sense of how they look like.</p>
 <pre class="r"><code>## View data
 str(data)</code></pre>
 <pre><code>## 'data.frame':    17568 obs. of  3 variables:
@@ -109,9 +105,7 @@ str(data)</code></pre>
 ## 17566    NA 2012-11-30     2345
 ## 17567    NA 2012-11-30     2350
 ## 17568    NA 2012-11-30     2355</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>Before I start running my analysis, I will load the packages that I need. I prefer the data to be in non-exponential form, so I will disable the scientific notation too.</li>
-</ol>
+<p>Before I start running my analysis, I will load the packages that I need. I prefer the data to be in non-exponential form, so I will disable the scientific notation too.</p>
 <pre class="r"><code>## Load packages for use
 library(plyr)
 library(dplyr)
@@ -123,7 +117,7 @@ options(scipen=999)</code></pre>
 </div>
 <div id="processingtransforming-the-data" class="section level4">
 <h4>2. Processing/Transforming the data</h4>
-<p>To facilitate my analysis, I will transform the variables first and rearrange them.</p>
+<p>To facilitate my analysis, I will transform the variables first.</p>
 <ol style="list-style-type: decimal">
 <li><strong>steps</strong>: Convert the class from <em>integer</em> to <em>numeric</em>.</li>
 <li><strong>date</strong>: Convert the class from <em>character</em> to <em>date</em> format.</li>
@@ -141,9 +135,7 @@ str(data)</code></pre>
 ##  $ steps   : num  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ date    : Date, format: &quot;2012-10-01&quot; &quot;2012-10-01&quot; ...
 ##  $ interval: chr  &quot;00:00&quot; &quot;00:05&quot; &quot;00:10&quot; &quot;00:15&quot; ...</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>Use <strong>select</strong> function from dplyr to rearrange the variables in the order of <strong>date</strong>, <strong>interval</strong>, and <strong>steps</strong>.</li>
-</ol>
+<p>Use <strong>select</strong> function from dplyr to rearrange the variables in the order of <strong>date</strong>, <strong>interval</strong>, and <strong>steps</strong>.</p>
 <pre class="r"><code>## Rearrange the variables in the dataset
 data1 &lt;- select(data, date, interval, steps)</code></pre>
 <p>The processed dataset will look like this.</p>
@@ -160,7 +152,7 @@ head(data1)</code></pre>
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
 <h2>What is mean total number of steps taken per day?</h2>
-<p>First, select the cases with no missing values. This is necessary to prevent bias being introduced in the computation of mean and median total number of steps.</p>
+<p>Select the cases with no missing values. This is necessary to prevent bias being introduced in the computation of mean and median total number of steps.</p>
 <pre class="r"><code>## Select only cases with no missing values
 data2 &lt;- data1[complete.cases(data1),]</code></pre>
 <div id="make-a-histogram-of-the-total-number-of-steps-taken-each-day" class="section level4">
@@ -269,7 +261,7 @@ int.mean &lt;- ddply(data2, .(interval), summarize, mean.steps = mean(steps))</c
 </div>
 <div id="create-a-new-dataset-that-is-equal-to-the-original-dataset-but-with-the-missing-data-filled-in." class="section level4">
 <h4>3. Create a new dataset that is equal to the original dataset but with the missing data filled in.</h4>
-<p>Firstly, create a <strong>for loop</strong> function to replace missing values (NAs) in the new dataset <strong>comp.data</strong> with the corresponding 5-minute interval mean.</p>
+<p>First, create a <strong>for loop</strong> function to replace missing values (NAs) in the new dataset <strong>comp.data</strong> with the corresponding 5-minute interval mean.</p>
 <pre class="r"><code>## Create a new dataset with no missing values
 comp.data &lt;- data1
         for (i in 1:length(comp.data[,3])) {
