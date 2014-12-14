@@ -376,9 +376,9 @@ comp.data2$week &lt;- gsub(&quot;Sunday&quot;, &quot;weekend&quot;, comp.data2$w
 <p>First, I will compute the average number of steps taken per 5-minute interval, averaged across all weekday days or weekend days</p>
 <pre class="r"><code>## Compute the mean steps taken per 5-min interval, averaged across all weekday days or weekend days
 comp.data3 &lt;- ddply(comp.data2, c(&quot;interval&quot;, &quot;week&quot;), summarize,
-                    mean.steps = mean(steps))
-
-## Plot a panel plot with facets for weekday days and weekend days
+                    mean.steps = mean(steps))</code></pre>
+<p>Next, I will plot the panel plot with two facets for weekday days and weekend days.</p>
+<pre class="r"><code>## Plot a panel plot with facets for weekday days and weekend days
 g4 &lt;- ggplot(comp.data3, aes(x = interval, y = mean.steps, group = week, colour = week)) 
 plot4 &lt;- g4 + geom_line(size = 1) + facet_grid(week ~ .) +
         ggtitle(&quot;Average Number of Steps Taken Each 5-Minute Interval\n(1 Oct 2012 - 30 Nov 2012)&quot;) +

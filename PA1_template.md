@@ -549,7 +549,12 @@ First, I will compute the average number of steps taken per 5-minute interval, a
 ## Compute the mean steps taken per 5-min interval, averaged across all weekday days or weekend days
 comp.data3 <- ddply(comp.data2, c("interval", "week"), summarize,
                     mean.steps = mean(steps))
+```
 
+Next, I will plot the panel plot with two facets for weekday days and weekend days.
+
+
+```r
 ## Plot a panel plot with facets for weekday days and weekend days
 g4 <- ggplot(comp.data3, aes(x = interval, y = mean.steps, group = week, colour = week)) 
 plot4 <- g4 + geom_line(size = 1) + facet_grid(week ~ .) +
@@ -561,6 +566,6 @@ plot4 <- g4 + geom_line(size = 1) + facet_grid(week ~ .) +
 print(plot4)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-31-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-32-1.png) 
 
 
